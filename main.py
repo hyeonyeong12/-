@@ -140,9 +140,6 @@ def send_mv_analysis():
     else:
         print(f"⚠️ 전송 실패: {resp.status_code} - {resp.text}")
 
-if __name__ == "__main__":
-    send_mv_analysis()
-
 # ==========================================
 # 3. 앨범 아트 & 패키징 비주얼 아카이브 연동
 # ==========================================
