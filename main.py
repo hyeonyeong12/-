@@ -142,3 +142,23 @@ def send_mv_analysis():
 
 if __name__ == "__main__":
     send_mv_analysis()
+
+# ==========================================
+# 3. 앨범 아트 & 패키징 비주얼 아카이브 연동
+# ==========================================
+from album_art import send_album_art_analysis
+
+# main 실행 시 기존 MV 분석과 앨범아트 채널 발송을 함께 수행
+_original_main = send_mv_analysis
+
+def run_all_archives():
+    print("🚀 [1/2] MV 연출 & 퀴즈 아카이브 발송 중...")
+    _original_main()
+    print("🚀 [2/2] 앨범 아트 & 비주얼 디자인 아카이브 발송 중...")
+    try:
+        send_album_art_analysis()
+    except Exception as e:
+        print(f"⚠️ 앨범아트 발송 실패: {e}")
+
+if __name__ == "__main__":
+    run_all_archives()
