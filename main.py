@@ -3,10 +3,9 @@ import random
 import requests
 from datetime import datetime
 
-# 디스코드 웹훅 URL (GitHub Actions Secrets에서 주입)
 WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 
-# 30년 차 뮤비 디렉터의 아이돌 MV 연출 & 레이아웃 시각 인포그래픽 아카이브
+# 1. 고화질 시각 인포그래픽 아카이브 (Visual Analysis)
 ANALYSIS_ARCHIVE = [
     {
         "title": "🎬 [디렉터스 컷] 에스파(aespa) - 'Supernova'",
@@ -60,42 +59,84 @@ ANALYSIS_ARCHIVE = [
     }
 ]
 
+# 2. 데일리 연출 스터디 퀴즈 아카이브 (Daily Director Quiz)
+QUIZ_ARCHIVE = [
+    {
+        "question": "Q1. 인물이 누워있거나 정적인 씬에서 심리적 불안감이나 강렬한 긴장감을 부여하기 위해 수평선을 20~30도 비틀어 촬영하는 앵글 기법은?",
+        "options": "1️⃣ 버드 아이즈 뷰 (Bird's Eye View)\n2️⃣ 더치 틸트 (Dutch Tilt / Canted Angle)\n3️⃣ 오비탈 샷 (Orbital Tracking Shot)\n4️⃣ 웜즈 아이 뷰 (Worm's Eye View)",
+        "answer": "2번 더치 틸트 (Dutch Tilt)",
+        "explanation": "수평을 의도적으로 깨뜨려 관객의 뇌에 시각적 불안과 에너지를 전달하는 고전적이면서도 가장 강력한 연출 기법입니다. (예: 에스파 'Supernova' 윈터 도입부)",
+        "scene_ref": "https://raw.githubusercontent.com/hyeonyeong12/-/main/images/supernova.png"
+    },
+    {
+        "question": "Q2. 비트가 터지는 킬링파트 직전에 프레임을 120fps 슬로우로 늘렸다가 순간적으로 24fps 원배속으로 낚아채며 시각적 타격감을 주는 편집 기법은?",
+        "options": "1️⃣ 점프 컷 (Jump Cut)\n2️⃣ 크로스 디졸브 (Cross Dissolve)\n3️⃣ 스피드 램핑 (Speed Ramping)\n4️⃣ 매치 컷 (Match Cut)",
+        "answer": "3번 스피드 램핑 (Speed Ramping)",
+        "explanation": "시간의 흐름을 왜곡시켜 관객의 호흡을 쥐락펴락하는 기법으로, K-POP 댄스 브레이크와 임팩트 모션의 90% 이상에 쓰입니다.",
+        "scene_ref": "https://raw.githubusercontent.com/hyeonyeong12/-/main/images/ive_iam.png"
+    },
+    {
+        "question": "Q3. 피사체 뒤편에서 강한 역광을 쏘아 인물의 외곽선 실루엣을 빛나게 만들어 어두운 배경과 피사체를 3D처럼 명확히 분리해 주는 조명 기법은?",
+        "options": "1️⃣ 림 라이트 (Rim / Edge Light)\n2️⃣ 키 라이트 (Key Light)\n3️⃣ 플랫 라이트 (Flat Light)\n4️⃣ 바운스 라이트 (Bounce Light)",
+        "answer": "1번 림 라이트 (Rim Light)",
+        "explanation": "사이버펑크, 성당, 지하 클럽 등 어두운 톤의 뮤비 씬에서 인물의 윤곽을 살리고 몽환적인 후광 효과를 줄 때 필수적으로 사용하는 세팅입니다.",
+        "scene_ref": "https://raw.githubusercontent.com/hyeonyeong12/-/main/images/lesserafim_easy.png"
+    },
+    {
+        "question": "Q4. 전혀 다른 두 씬 사이를 전환할 때, 형태나 움직임이 유사한 오브젝트(원형 바퀴 ➡️ 찻잔, 턴 동작 ➡️ 회전문)를 이어붙여 시각적 연속성을 만드는 트랜지션은?",
+        "options": "1️⃣ 페이드 아웃 (Fade Out)\n2️⃣ 매치 컷 (Match Cut / Graphic Match)\n3️⃣ 윕 팬 (Whip Pan)\n4️⃣ L-컷 (L-Cut)",
+        "answer": "2번 매치 컷 (Match Cut)",
+        "explanation": "단순한 컷 전환을 넘어 시공간을 초월하는 세련된 은유를 완성할 때 디렉터들이 가장 애용하는 시각적 속임수 기법입니다.",
+        "scene_ref": "https://raw.githubusercontent.com/hyeonyeong12/-/main/images/bts_bst.png"
+    }
+]
+
 def send_mv_analysis():
     if not WEBHOOK_URL:
         print("❌ DISCORD_WEBHOOK_URL 환경 변수가 설정되지 않았습니다.")
         return
 
-    item = random.choice(ANALYSIS_ARCHIVE)
     today = datetime.now().strftime("%Y년 %m월 %d일")
+    mode = random.choice(["analysis", "quiz"])
 
-    embed = {
-        "title": item["title"],
-        "description": f"**핵심 콘셉트:** {item['concept']}\n*30년 차 디렉터의 실전 연출 & 레이아웃 시각 인포그래픽*",
-        "color": 0x00E5FF,  # 시안 네온 톤
-        "image": {
-            "url": item["image_url"]
-        },
-        "fields": [
-            {"name": "📐 구도 및 레이아웃 분할", "value": item["layout"], "inline": False},
-            {"name": "🎥 카메라 무빙 & 트랜지션", "value": item["camera"], "inline": False},
-            {"name": "✨ 덕심 저격 마이크로 액팅", "value": item["acting"], "inline": False},
-            {"name": "🎨 컬러 그레이딩 & 조명", "value": item["color"], "inline": False},
-            {"name": "💡 디렉터의 실무 노트", "value": item["director_tip"], "inline": False}
-        ],
-        "footer": {
-            "text": f"Pickle MV Director Visual Archive • {today}"
+    if mode == "analysis":
+        item = random.choice(ANALYSIS_ARCHIVE)
+        embed = {
+            "title": item["title"],
+            "description": f"**핵심 콘셉트:** {item['concept']}\n*30년 차 디렉터의 실전 연출 & 레이아웃 시각 인포그래픽*",
+            "color": 0x00E5FF,
+            "image": {"url": item["image_url"]},
+            "fields": [
+                {"name": "📐 구도 및 레이아웃 분할", "value": item["layout"], "inline": False},
+                {"name": "🎥 카메라 무빙 & 트랜지션", "value": item["camera"], "inline": False},
+                {"name": "✨ 덕심 저격 마이크로 액팅", "value": item["acting"], "inline": False},
+                {"name": "🎨 컬러 그레이딩 & 조명", "value": item["color"], "inline": False},
+                {"name": "💡 디렉터의 실무 노트", "value": item["director_tip"], "inline": False}
+            ],
+            "footer": {"text": f"Pickle MV Director Visual Archive • {today}"}
         }
-    }
+        msg = "오늘의 시각 연출 아카이브가 도착했습니다! 🎬"
+    else:
+        quiz = random.choice(QUIZ_ARCHIVE)
+        embed = {
+            "title": "🧠 [디렉터스 퀴즈] 오늘의 실전 연출 감각 트레이닝",
+            "description": f"**{quiz['question']}**\n\n{quiz['options']}\n\n━━━━━━━━━━━━━━━━━━━━\n👇 **정답 & 디렉터 해설 확인 (클릭)**\n||**정답:** {quiz['answer']}\n**해설:** {quiz['explanation']}||",
+            "color": 0xFFD700,
+            "image": {"url": quiz["scene_ref"]},
+            "footer": {"text": f"Pickle Director Training Quiz • {today}"}
+        }
+        msg = "오늘의 연출 퀴즈가 도착했습니다! 스포일러를 누르기 전에 답을 먼저 맞춰보세요. 🎯"
 
     payload = {
-        "username": "MV 디렉터 아카이브",
+        "username": "MV 디렉터 스터디 룸",
         "avatar_url": "https://images.unsplash.com/photo-1518173946687-a4c8a383392e?w=128&auto=format&fit=crop&q=80",
+        "content": msg,
         "embeds": [embed]
     }
 
     resp = requests.post(WEBHOOK_URL, json=payload)
     if resp.status_code == 204:
-        print("✅ 디스코드로 시각 인포그래픽 분석 자료 전송 완료!")
+        print(f"✅ 디스코드로 전송 완료! (모드: {mode})")
     else:
         print(f"⚠️ 전송 실패: {resp.status_code} - {resp.text}")
 
